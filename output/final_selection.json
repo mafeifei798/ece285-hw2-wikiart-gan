@@ -1,0 +1,42 @@
+{
+  "selection_basis": "lowest validation FID; test evaluated only after selection",
+  "validation_best": [
+    {
+      "run": "r1",
+      "checkpoint": "output/r1/epoch_200.pt",
+      "epoch": "200",
+      "weights": "ema",
+      "fid_ignite": "0.07055275759759419",
+      "inception_score": "3.6360283584618607"
+    },
+    {
+      "run": "r2",
+      "checkpoint": "output/r2/epoch_180.pt",
+      "epoch": "180",
+      "weights": "ema",
+      "fid_ignite": "0.09178903088365398",
+      "inception_score": "2.8093217025259176"
+    },
+    {
+      "run": "r3_restart_20261112",
+      "checkpoint": "output/r3_restart_20261112/epoch_160.pt",
+      "epoch": "160",
+      "weights": "ema",
+      "fid_ignite": "0.09916739741438878",
+      "inception_score": "1.9507892428616105"
+    }
+  ],
+  "selected_checkpoint": "output/r1/epoch_200.pt",
+  "test": {
+    "fid_ignite": 0.0830215621710159,
+    "inception_score": 3.6360280571056887,
+    "checkpoint": "output/r1/epoch_200.pt",
+    "epoch": 200,
+    "weights": "ema",
+    "split": "test",
+    "seed": 2026,
+    "real_count": 1000,
+    "generated_count": 1000,
+    "fid_features": "Ignite Inception probabilities (1000 dimensions)"
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "data": "data",
+  "output": "output/r1",
+  "epochs": 200,
+  "batch_size": 64,
+  "latent_dim": 128,
+  "width": 64,
+  "lr": 0.0002,
+  "seed": 2026,
+  "workers": 2,
+  "save_every": 20,
+  "device": "cuda",
+  "flip": true,
+  "ema": 0.999,
+  "diffaug": "",
+  "upsample": "deconv",
+  "d_norm": "bn",
+  "loss": "bce",
+  "image_size": 128
+}

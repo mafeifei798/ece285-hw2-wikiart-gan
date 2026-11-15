@@ -1,0 +1,10 @@
+{
+  "fid_ignite": 0.09495983101461211,
+  "inception_score": 2.903117281170351,
+  "epoch": 100,
+  "split": "val",
+  "seed": 2026,
+  "real_count": 1000,
+  "generated_count": 1000,
+  "fid_features": "Ignite Inception probabilities (1000 dimensions)"
+}

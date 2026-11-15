@@ -1,0 +1,12 @@
+{
+  "source": "https://www.kaggle.com/datasets/steubk/wikiart",
+  "seed": 2026,
+  "image_size": 128,
+  "preprocessing": "EXIF orientation, RGB, aspect-preserving resize and center crop",
+  "duplicates_removed": 12,
+  "counts": {
+    "train": 9988,
+    "val": 1000,
+    "test": 1000
+  }
+}

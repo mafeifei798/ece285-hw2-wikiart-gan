@@ -1,0 +1,15 @@
+{
+  "inception_score": {
+    "train": 5.459552853365407,
+    "val": 5.414356015380658,
+    "test": 5.511525681119601
+  },
+  "fid_ignite": {
+    "train_vs_val": 0.03546765742687702,
+    "train_vs_test": 0.04099780785460633,
+    "val_vs_test": 0.03779124834789124
+  },
+  "count_per_split": 1000,
+  "seed": 2026,
+  "fid_features": "Ignite Inception probabilities (1000 dimensions)"
+}

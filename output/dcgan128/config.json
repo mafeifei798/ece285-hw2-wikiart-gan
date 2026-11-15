@@ -1,0 +1,14 @@
+{
+  "data": "data",
+  "output": "output/dcgan128",
+  "epochs": 100,
+  "batch_size": 64,
+  "latent_dim": 128,
+  "width": 32,
+  "lr": 0.0002,
+  "seed": 2026,
+  "workers": 2,
+  "save_every": 10,
+  "device": "cuda",
+  "image_size": 128
+}

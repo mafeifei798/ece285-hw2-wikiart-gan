@@ -1,0 +1,13 @@
+.venv/
+__pycache__/
+data/images/
+data/*.zip
+output/
+*.pt
+.DS_Store
+tmp/
+HANDOFF.md
+*.zip
+*.log
+*.aux
+*.out

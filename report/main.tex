@@ -1,0 +1,119 @@
+\documentclass{article}
+\usepackage[preprint,nonatbib]{neurips_2026}
+\usepackage[T1]{fontenc}
+\usepackage{amsmath,amssymb,graphicx,booktabs,hyperref}
+\setlength{\intextsep}{7pt}
+\hypersetup{hidelinks,pdftitle={Painting Generation with a DCGAN},pdfauthor={Hongyi Ding}}
+\makeatletter
+\renewcommand{\@noticestring}{ECE 285: Deep Generative Models, Homework 2, Fall 2026.}
+\makeatother
+\input{values.tex}
+\title{Painting Generation with a DCGAN}
+\author{Hongyi Ding \quad {\normalfont UC San Diego}\\
+{\footnotesize\textbf{Code: }\href{https://github.com/mafeifei798/ece285-hw2-wikiart-gan}{\nolinkurl{github.com/mafeifei798/ece285-hw2-wikiart-gan}}}}
+\begin{document}
+\maketitle
+\begin{abstract}
+This project trains a DCGAN to generate $128\times128$ WikiArt paintings.
+The experiments start with a small baseline, then try a wider model, weight
+averaging and data augmentation. The best run reaches test FID \TestFID{}
+and Inception Score \TestIS{}, with varied colors and recognizable painting layouts.
+\end{abstract}
+
+\section{Data and model}
+The data consists of 12,000 randomly sampled \href{https://www.kaggle.com/datasets/steubk/wikiart}{WikiArt images}.
+After removing 12 duplicates, 9,988 images were used for training and 1,000 each
+for validation and testing. All 27 styles are included. Images were resized
+with their aspect ratio preserved, center-cropped to $128\times128$ RGB, and
+scaled to $[-1,1]$. This kept textures visible while making training manageable.
+The GAN receives images without style labels.
+
+The generator maps $z\sim\mathcal N(0,I_{128})$ to $4\times4$ features and upsamples
+five times with transposed convolutions, BatchNorm and ReLU, ending in Tanh.
+The discriminator uses strided convolutions, BatchNorm and LeakyReLU (0.2).
+Non-saturating training minimizes real-plus-fake binary cross-entropy (BCE)
+for the discriminator and BCE against real labels for the generator.
+
+\section{Training configurations}
+Adam used learning rate $2\times10^{-4}$, betas 0.5/0.999, batch size 64,
+seed 2026, and one discriminator update per generator update.
+The width-32 baseline ran for 100 epochs; the following ran for 200:
+\begin{itemize}
+\setlength\itemsep{0pt}
+\item \textbf{R1:} width 64, horizontal flips, and generator exponential moving
+average (EMA), decay 0.999.
+\item \textbf{R2:} R1 plus differentiable color, translation and cutout augmentation
+of real and generated discriminator inputs.
+\item \textbf{R3:} R2 plus nearest-neighbor/conv upsampling, discriminator spectral
+normalization replacing BatchNorm, and hinge loss replacing BCE.
+\end{itemize}
+
+
+\begin{figure}[h!]
+\centering
+\includegraphics[width=\linewidth]{figures/losses.pdf}
+\caption{Generator and discriminator losses averaged over each epoch. The curves use
+the training weights; R1's sample evaluation uses EMA weights.}
+\label{fig:loss}
+\end{figure}
+
+\newpage
+\section{Results and observations}
+Evaluation used Ignite 0.5.4 and the assignment tutorial\footnote{\url{https://pytorch-ignite.ai/blog/gan-evaluation-with-fid-and-is/}},
+with 1,000 real and 1,000 generated images per comparison. Both were converted
+to 8-bit RGB and resized bilinearly to $299\times299$.
+FID is computed from 1,000-dimensional Inception class probabilities.
+IS is computed over the full generated set. Every checkpoint uses the same noise
+vectors, making the sample comparisons easier to follow.
+
+\begin{table}[h!]
+\centering
+\small
+\begin{tabular}{llrrr}
+\toprule
+Split & Configuration & Epoch & FID $\downarrow$ & IS $\uparrow$\\
+\midrule
+Validation & Baseline (raw) & 100 & \ValFIDA & \ValISA\\
+ & R1 (EMA) & 200 & \textbf{\ValFIDB} & \textbf{\ValISB}\\
+ & R2 (EMA) & 180 & \ValFIDC & \ValISC\\
+ & R3 (EMA) & 160 & \ValFIDD & \ValISD\\
+\midrule
+Test & Selected R1 (EMA) & 200 & \TestFID & \TestIS\\
+\bottomrule
+\end{tabular}
+\caption{Best validation checkpoints and the final test result. R1 uses the same generated
+images for validation and test, so its IS is the same in both rows.}
+\label{tab:results}
+\end{table}
+
+Each run was checked at epoch 1 and every 20 epochs. R1's epoch-200 EMA
+weights gave the lowest validation FID, so this checkpoint was used for the
+final test evaluation. Adding DiffAugment in R2 did not help, and R3's combination
+of upsampling, normalization and loss changes also scored worse.
+
+Training longer mattered for R1: at epoch 100, its validation FID was
+\RoneHundredFID{}, compared with the baseline's \ValFIDA{}. It improved to
+\ValFIDB{} by epoch 200. The final comparison therefore includes both the
+model changes and twice the training duration.
+
+\begin{figure}[h!]
+\centering
+\includegraphics[width=.51\linewidth]{figures/generated.png}
+\caption{The first 16 generated images from the final evaluation, in sampling order.
+Each image is $128\times128$.}
+\label{fig:samples}
+\end{figure}
+
+The loss curves tell a different story from FID. In Figure~\ref{fig:loss},
+discriminator loss falls while generator loss rises after an early drop.
+R1 finishes at $\mathcal L_D=0.084$ and $\mathcal L_G=6.25$, but its lowest
+validation FID comes at epoch 200. Following generator loss alone would have
+stopped this run too early.
+
+The generated images capture landscape colors, portrait-like layouts and
+abstract textures. Faces and object boundaries are still often distorted.
+For comparison, real train images versus real test images give FID
+\RealTestFID{}, and real test images have IS \RealTestIS{}. R1 gives the best
+result in these experiments, but there is still a visible gap between learning
+a painting's overall appearance and drawing coherent objects.
+\end{document}
