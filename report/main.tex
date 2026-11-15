@@ -14,10 +14,10 @@
 \begin{document}
 \maketitle
 \begin{abstract}
-A DCGAN was trained to generate $128\times128$ WikiArt paintings, starting with
-a small baseline followed by three larger configurations. The best model
-reached test FID \TestFID{} and Inception Score \TestIS{}. Its samples capture
-a range of painting styles, though faces and objects are still often distorted.
+This report compares four DCGAN configurations for generating WikiArt paintings.
+A wider model with horizontal flips and averaged generator weights gave the best
+result after 200 epochs: test probability FID \TestFID{} and IS \TestIS{}.
+The samples capture varied colors and compositions, but faces and objects remain distorted.
 \end{abstract}
 
 \section{Data and model}
