@@ -78,7 +78,9 @@ Evaluation follows the course's
 [Ignite tutorial](https://pytorch-ignite.ai/blog/gan-evaluation-with-fid-and-is/).
 It compares 1,000 real and 1,000 generated images, converted to 8-bit RGB and
 bilinearly resized to 299 x 299. FID uses 1,000-dimensional Inception class
-probabilities. IS uses the whole generated set as one split. Validation and
+probabilities. Its numerical scale is much smaller than the usual 2,048-feature
+FID, and the two scores are not directly comparable. IS uses the whole generated
+set as one split. Validation and
 test reuse the same generated samples, so R1's IS is the same for both.
 
 The final evaluation has already been run. Its command was:

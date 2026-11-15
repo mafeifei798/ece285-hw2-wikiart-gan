@@ -63,6 +63,8 @@ Evaluation used Ignite 0.5.4 and the assignment tutorial\footnote{\url{https://p
 with 1,000 real and 1,000 generated images per comparison. Both were converted
 to 8-bit RGB and resized bilinearly to $299\times299$.
 FID is computed from 1,000-dimensional Inception class probabilities.
+Its numerical scale is much smaller than that of the usual 2,048-feature FID,
+so the two scores are not directly comparable.
 IS is computed over the full generated set. Every checkpoint uses the same noise
 vectors, making the sample comparisons easier to follow.
 
