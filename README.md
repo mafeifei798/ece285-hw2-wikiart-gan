@@ -2,8 +2,9 @@
 
 Code for [ECE 285 Homework 2](output/pdf/ECE285_HW2_Report_Hongyi_Ding.pdf).
 
-A DCGAN for 128 x 128 RGB paintings. The final model is R1 at epoch 200,
-using averaged generator weights (EMA).
+This project started with a small DCGAN baseline for 128 x 128 paintings,
+then compared three width-64 configurations. R1 at epoch 200 gave the best
+validation FID, so its averaged generator weights (EMA) were used for test.
 
 ## Setup and data
 

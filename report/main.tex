@@ -14,10 +14,10 @@
 \begin{document}
 \maketitle
 \begin{abstract}
-This project trains a DCGAN to generate $128\times128$ WikiArt paintings.
-The experiments start with a small baseline, then try a wider model, weight
-averaging and data augmentation. The best run reaches test FID \TestFID{}
-and Inception Score \TestIS{}, with varied colors and recognizable painting layouts.
+I trained a DCGAN to generate $128\times128$ WikiArt paintings, starting with
+a small baseline and then trying three larger configurations. The best model
+reached test FID \TestFID{} and Inception Score \TestIS{}. Its samples capture
+a range of painting styles, though faces and objects are still often distorted.
 \end{abstract}
 
 \section{Data and model}
@@ -25,8 +25,7 @@ The data consists of 12,000 randomly sampled \href{https://www.kaggle.com/datase
 After removing 12 duplicates, 9,988 images were used for training and 1,000 each
 for validation and testing. All 27 styles are included. Images were resized
 with their aspect ratio preserved, center-cropped to $128\times128$ RGB, and
-scaled to $[-1,1]$. This kept textures visible while making training manageable.
-The GAN receives images without style labels.
+scaled to $[-1,1]$. This kept training manageable. Style labels were not used.
 
 The generator maps $z\sim\mathcal N(0,I_{128})$ to $4\times4$ features and upsamples
 five times with transposed convolutions, BatchNorm and ReLU, ending in Tanh.
@@ -35,9 +34,9 @@ Non-saturating training minimizes real-plus-fake binary cross-entropy (BCE)
 for the discriminator and BCE against real labels for the generator.
 
 \section{Training configurations}
-Adam used learning rate $2\times10^{-4}$, betas 0.5/0.999, batch size 64,
-seed 2026, and one discriminator update per generator update.
-The width-32 baseline ran for 100 epochs; the following ran for 200:
+All runs used Adam ($lr=2\times10^{-4}$, betas 0.5/0.999), batch size 64 and
+seed 2026, with one discriminator update per generator update.
+I ran a width-32 baseline for 100 epochs, then three width-64 models for 200:
 \begin{itemize}
 \setlength\itemsep{0pt}
 \item \textbf{R1:} width 64, horizontal flips, and generator exponential moving
@@ -88,15 +87,15 @@ images for validation and test, so its IS is the same in both rows.}
 \label{tab:results}
 \end{table}
 
-Each run was checked at epoch 1 and every 20 epochs. R1's epoch-200 EMA
-weights gave the lowest validation FID, so this checkpoint was used for the
-final test evaluation. Adding DiffAugment in R2 did not help, and R3's combination
-of upsampling, normalization and loss changes also scored worse.
+I compared checkpoints from R1--R3 at epoch 1 and every 20 epochs, using
+validation FID to choose the final model. R1 at epoch 200 came out best, so
+I used its EMA weights for the test evaluation. The extra augmentation in R2
+and the combination of changes in R3 both gave worse scores.
 
-Training longer mattered for R1: at epoch 100, its validation FID was
-\RoneHundredFID{}, compared with the baseline's \ValFIDA{}. It improved to
-\ValFIDB{} by epoch 200. The final comparison therefore includes both the
-model changes and twice the training duration.
+R1 needed the longer run to overtake the baseline. At epoch 100, its validation
+FID was \RoneHundredFID{}, versus \ValFIDA{} for the baseline; by epoch 200,
+it had dropped to \ValFIDB{}. The improvement includes both the model changes
+and the extra 100 epochs of training.
 
 \begin{figure}[h!]
 \centering
@@ -106,16 +105,16 @@ Each image is $128\times128$.}
 \label{fig:samples}
 \end{figure}
 
-The loss curves tell a different story from FID. In Figure~\ref{fig:loss},
-discriminator loss falls while generator loss rises after an early drop.
-R1 finishes at $\mathcal L_D=0.084$ and $\mathcal L_G=6.25$, but its lowest
-validation FID comes at epoch 200. Following generator loss alone would have
-stopped this run too early.
+One thing I noticed was that generator loss did not track sample quality.
+It rose after an early drop, while validation FID improved later in training.
+R1 ended with discriminator loss 0.084 and generator loss 6.25
+(Figure~\ref{fig:loss}), yet epoch 200 had its lowest validation FID.
+Choosing a checkpoint by generator loss alone would have missed this result.
 
-The generated images capture landscape colors, portrait-like layouts and
-abstract textures. Faces and object boundaries are still often distorted.
-For comparison, real train images versus real test images give FID
-\RealTestFID{}, and real test images have IS \RealTestIS{}. R1 gives the best
-result in these experiments, but there is still a visible gap between learning
-a painting's overall appearance and drawing coherent objects.
+Looking at the samples, the model has learned more about color and composition
+than object shape. There are landscape-like scenes, portraits and abstract
+textures, but many faces and boundaries look distorted. Real train images
+versus real test images scored FID \RealTestFID{}, and real test images had
+IS \RealTestIS{}. R1 was the best of the runs tried here; drawing coherent
+objects remains the clearest weakness in its samples.
 \end{document}

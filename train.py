@@ -37,10 +37,7 @@ def generator_loss(fake_logits, loss="bce"):
 
 
 def train_step(real, generator, discriminator, optimizer_g, optimizer_d, loss="bce", augment=None):
-    """One discriminator and one generator update.
-
-    Returns a detached tensor: [loss_d, loss_g, mean D logit on real, mean D logit on fake].
-    """
+    """Update D and G; return their losses and mean real/fake logits."""
     augment = augment or (lambda images: images)
     z = torch.randn(len(real), generator.latent_dim, device=real.device)
     fake = generator(z)
@@ -69,12 +66,7 @@ def update_ema(ema, model, decay):
 
 @torch.no_grad()
 def recalibrate_batchnorm(generator, batches=32, batch_size=64, seed=0):
-    """Re-estimate BatchNorm running statistics for averaged weights.
-
-    EMA weights never run in training mode, so their BatchNorm statistics are
-    recomputed from fresh noise. A separate random generator keeps the
-    training random stream unchanged.
-    """
+    """Refresh EMA BatchNorm statistics using a separate noise generator."""
     device = next(generator.parameters()).device
     norms = [m for m in generator.modules() if isinstance(m, nn.BatchNorm2d)]
     momenta = [m.momentum for m in norms]
